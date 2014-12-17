@@ -12,6 +12,13 @@ var api = {
 			geo = data;
 			console.log('this console.log is in the api: ', geo);
 			// function(results){
+				// res.send(geo);//what we want it to be
+			rer.send({ results: 
+			   [ { address_components: [Object],
+			       formatted_address: '2100 22nd Street, Boulder, CO 80302, USA',
+			       geometry: [Object],
+			       types: [Object] } ],
+			  status: 'OK' })//fake API call
 			res.send(geo);
 			// };
 		})
