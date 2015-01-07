@@ -5,26 +5,40 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var datasetsRoutes = require('./routes/datasetsRoutes');
-var elementsRoutes = require('./routes/elementsRoutes');
+//var routes = require('./routes/index');
+//var users = require('./routes/users');
+//var datasetsRoutes = require('./routes/datasetsRoutes');
+//var elementsRoutes = require('./routes/elementsRoutes');
 
 var app = express();
 var mongo = require('mongoskin');
 
 // Setup Database
 //var db = mongo.db("mongodb://localhost:27017/opendataplus",{native_parser:true});
-var db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
+global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
+
 /*
 db.authenticate("odp", "Hack4art", function(error, result){
                  console.log("RESULT FROM DB authentication:", error, result)
                });
 */
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.set("jsonp callback", true);
+
+
+//enable cross-site scripting
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -34,15 +48,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//inject the database into the request
-app.use(function(req,res,next){
-    req.db = db;
-    next();
-});
 
-app.use('/', routes);
-app.use('/users', users);
-app.use('/datasets', datasetsRoutes);
+// load all controller routes
+var router = express.Router();
+var routes = require('./app/app_main.js')(router);
+app.use('/', router);
+
+
+//app.use('/', routes);
+//app.use('/users', users);
+//app.use('/datasets', datasetsRoutes);
 //app.use('/datasets/:dsname/elements', elementsRoutes);
 
 // catch 404 and forward to error handler
