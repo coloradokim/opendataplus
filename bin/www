@@ -2,13 +2,23 @@
 var debug = require('debug')('odp');
 var app = require('../app');
 
-app.set('port', process.env.PORT || 3000);
+var port = process.env.PORT || 3000;
 
-//
-global.db.authenticate("odp", "Hack4art", function(error, result){
+var options = {
+  key: fs.readFileSync('config/server.key'),
+  cert: fs.readFileSync('config/server.crt')
+};
+
+var dbAuthDone = false;
+global.db.authenticate("odp", "Hack4art", function(error, result) {
   console.log("RESULT FROM DB authentication:", error, result)
-  var server = app.listen(app.get('port'), function() {
-    debug('Express server listening on port ' + server.address().port);
-  });
+  dbAuthDone = true;
 });
+while (!dbAuthDone) {
+  require('deasync').runLoopOnce();
+}
+
+var server = https.createServer(options, app).listen(port);
+debug('Express server listening on port ' + server.address().port);
+
 
