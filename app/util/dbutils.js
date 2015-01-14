@@ -2,12 +2,12 @@
  * Created by cellis on 12/21/14.
  */
 
-module.exports = dbutils;
+module.exports = new dbutils;
 
 function dbutils() {};
 
 
-dbutils.prototype.createDocumentById = function(collection, newDocument, callback) {
+dbutils.prototype.createDocument = function(collection, newDocument, callback) {
 
     global.db.collection(collection)
         .insert(newDocument, function(err, result) {
@@ -102,6 +102,8 @@ dbutils.prototype.updateDocumentById = function(collection, docid, queryOptions,
     var mode = "set";
     if (queryOptions && queryOptions.mode && "unset".localeCompare(queryOptions.mode)) {
         mode = "unset";
+    } else if (queryOptions && queryOptions.mode && "put".localeCompare(queryOptions.mode)) {
+        mode = "put";
     }
 
     //build the updater object
@@ -127,7 +129,7 @@ dbutils.prototype.updateDocumentById = function(collection, docid, queryOptions,
                 setter[keys[i]] = queryOptions.body[keys[i]];
             }
         }
-    } else {  //don't need body, just specify the subdoc key
+    } else if (mode === "unset") {  //don't need body, just specify the subdoc key
         if (!subdocString || subdocString == "") {
             callback("Error, unset requires one subdocument key", null);
         } else {
@@ -138,8 +140,10 @@ dbutils.prototype.updateDocumentById = function(collection, docid, queryOptions,
     //determine which mongo operator to use
     if (mode === "unset") {
         updater = {"$unset": setter};
-    } else {
+    } else if (mode === "set") {
         updater = {"$set": setter};
+    } else if (mode === "put") {
+        updater = queryOptions.body;
     }
 
     //lookup user in db

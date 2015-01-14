@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var UserCtrlr = require('../controllers/usersCtrlr');
+var UserCtrlr = require('../app/users/user_controller');
 var dbutils = require('../controllers/dbutils');
 
 /* GET users listing. */

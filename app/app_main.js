@@ -19,4 +19,5 @@ module.exports = function(router) {
     require('./appspaces/appspace_controller').loadRoutes(router);
     require('./datasets/dataset_controller').loadRoutes(router);
     require('./docs/doc_controller').loadRoutes(router);
+    require('./users/user_controller').loadRoutes(router);
 };
