@@ -5,6 +5,7 @@
 
 var dbutils = require('../util/dbutils');
 var appspaceModel = require('./appspace_model');
+var docMetaModel = require('../docs/doc_meta_model');
 var getReqQuery = require('../util/apiutils').getRequestQuery;
 var respond = require('../util/apiutils').respond;
 
@@ -17,16 +18,18 @@ module.exports.loadRoutes = function(router) {
      ***************************/
 
     //search in the collection
-    router.get('/apps', function(req, res, next) {
+    router.get('/apps/:appid/appspace', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
         dbutils.findDocument(DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //add a document to the collection
-    router.post('/apps', function(req, res, next) {
-        var newDS = makeDataset(req);
-        dbutils.createDocument(DB_COLLECTION, newDS, function(err, result) {
+    router.post('/apps/:appid/appspace', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        var newDoc = makeDoc(req);
+        dbutils.createDocument(DB_COLLECTION, newDoc, function(err, result) {
             respond(req, res, next, err, result);
         });
     });
@@ -37,52 +40,59 @@ module.exports.loadRoutes = function(router) {
      ***************************/
 
     //get an existing document by id
-    router.get('/apps/:appid', function(req, res, next) {
-        dbutils.findDocumentById(DB_COLLECTION, req.param("appid"), getReqQuery(req, 2), function (err, result) {
+    router.get('/apps/:appid/appspace/:docid', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        dbutils.findDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //get a subdocument of an existing document by id
-    router.get('/apps/:appsid/*', function(req, res, next) {
-        dbutils.findDocumentById(DB_COLLECTION, req.param("datasetid"), getReqQuery(req, 2), function(err, result) {
+    router.get('/apps/:appid/appspace/:docid/*', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        dbutils.findDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //replace an existing document with a new object
-    router.put('/datasets/:datasetid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("datasetid"), getReqQuery(req, 2), function (err, result) {
+    router.put('/apps/:appid/appspace/:docid', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        dbutils.updateDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //partial update an existing document
-    router.patch('/datasets/:datasetid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("userid"), getReqQuery(req, 2), function (err, result) {
+    router.patch('/apps/:appid/appspace/:docid', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        dbutils.updateDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //partial update an existing document
-    router.patch('/datasets/:datasetid/DATA', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("userid"), getReqQuery(req, 2), function (err, result) {
-            respond(req, res, next, err, result);
-        });
-    });
+    //router.patch('/datasets/:datasetid/DATA', function(req, res, next) {
+    //    dbutils.updateDocumentById(DB_COLLECTION, req.param("userid"), getReqQuery(req, 4), function (err, result) {
+    //        respond(req, res, next, err, result);
+    //    });
+    //});
 
     //delete an existing document
-    router.delete('/datasets/:datasetid', function(req, res, next) {
-        dbutils.deleteDocumentById(DB_COLLECTION, req.param("datasetid"), function(err, result) {
+    router.delete('/apps/:appid/appspace/:docid', function(req, res, next) {
+        DB_COLLECTION = "appspace-"||req.param("appid");
+        dbutils.deleteDocumentById(DB_COLLECTION, req.param("docid"), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
 };
 
-function makeDataset(req) {
-    var newDataset = new DatasetModel(req.body);
-    return newDataset;
+function makeDoc(req) {
+    var newDoc = req.body;
+    newDoc.metadata = new docMetaModel();
+    newDoc.metadata.history[Date.now()] = "new docment created";
+    return newDoc;
 }
 
 

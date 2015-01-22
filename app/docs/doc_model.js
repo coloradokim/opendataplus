@@ -11,4 +11,3 @@ function Doc() {
     this.editApps = {};  //apps that can edit the core data
 }
 
-

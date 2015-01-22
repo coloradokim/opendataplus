@@ -1,6 +1,7 @@
 /**
  * Created by cellis on 12/21/14.
  */
+var ObjectID = require('mongodb').ObjectID;
 
 module.exports = new dbutils;
 
@@ -74,7 +75,7 @@ dbutils.prototype.findRandomDocument = function(collection, queryOptions, callba
     global.db.collection(collection).count(function(err, result) {
 
         //get random value to skip
-        var skipCount = Math.floor(Math.random() * (result - 0 + 1) + 0);
+        var skipCount = Math.floor(Math.random() * (result + 1) );
 
         global.db.collection(collection)
             .find(queryOptions.select, {}, {limit:-1, skip:skipCount})
@@ -117,7 +118,7 @@ dbutils.prototype.updateDocumentById = function(collection, docid, queryOptions,
     }
     var setter = {};
     if (mode === "set") { //process keys in body
-        var keys = _.keys(queryOptions.body);
+        var keys = Object.keys(queryOptions.body);
         if (keys.length < 1) {
             callback("nothing to update", null);
             return;

@@ -4,11 +4,11 @@
 
 module.exports = App;
 
-function App() {
-    this.name = "";  //"lafayette.com-publicart"
-    this.org = "orgid";
-    this.viewApps = {}  //apps that can see this data, view apps can edit their appspace
-    this.editApps = {};  //apps that can edit the core data
+function App(obj) {
+    this._id = obj && obj._id || undefined;
+    this.name = obj && obj.name || "" ;
+    this.description = obj && obj.description || "";
+    this.email = obj && obj.email || "";
+    this.owner = obj && obj.owner || "";
 }
-
 

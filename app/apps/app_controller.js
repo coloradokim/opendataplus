@@ -25,8 +25,8 @@ module.exports.loadRoutes = function(router) {
 
     //add a document to the collection
     router.post('/apps', function(req, res, next) {
-        var newDS = makeDataset(req);
-        dbutils.createDocument(DB_COLLECTION, newDS, function(err, result) {
+        var newApp = makeApp(req);
+        dbutils.createDocument(DB_COLLECTION, newApp, function(err, result) {
             respond(req, res, next, err, result);
         });
     });
@@ -44,45 +44,50 @@ module.exports.loadRoutes = function(router) {
     });
 
     //get a subdocument of an existing document by id
-    router.get('/apps/:appsid/*', function(req, res, next) {
-        dbutils.findDocumentById(DB_COLLECTION, req.param("datasetid"), getReqQuery(req, 2), function(err, result) {
+    router.get('/apps/:appid', function(req, res, next) {
+        dbutils.findDocumentById(DB_COLLECTION, req.param("appid"), getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //replace an existing document with a new object
-    router.put('/datasets/:datasetid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("datasetid"), getReqQuery(req, 2), function (err, result) {
+    router.put('/apps/:appid', function(req, res, next) {
+        dbutils.updateDocumentById(DB_COLLECTION, req.param("appid"), getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //partial update an existing document
-    router.patch('/datasets/:datasetid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("userid"), getReqQuery(req, 2), function (err, result) {
-            respond(req, res, next, err, result);
-        });
-    });
-
-    //partial update an existing document
-    router.patch('/datasets/:datasetid/DATA', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("userid"), getReqQuery(req, 2), function (err, result) {
+    router.patch('/apps/:appid', function(req, res, next) {
+        dbutils.updateDocumentById(DB_COLLECTION, req.param("appid"), getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //delete an existing document
-    router.delete('/datasets/:datasetid', function(req, res, next) {
-        dbutils.deleteDocumentById(DB_COLLECTION, req.param("datasetid"), function(err, result) {
+    router.delete('/apps/:appid', function(req, res, next) {
+        dbutils.deleteDocumentById(DB_COLLECTION, req.param("appid"), function(err, result) {
+            //also cleanup the appspace if one exists
+            var dbDropDone = false;
+            global.db.collection(collection).drop(function(err2, result2) {
+                dbDropDone = true;
+                //TODO:  what to do with an error here?
+            });
+            while (!dbDropDone) {
+                require('deasync').runLoopOnce();
+            }
             respond(req, res, next, err, result);
         });
     });
 
 };
 
-function makeDataset(req) {
-    var newDataset = new DatasetModel(req.body);
-    return newDataset;
+function makeApp(req) {
+    var newapp = new appModel(req.body);
+
+    //TODO:  validate we have a name and get the owner userid and email from the current user (of the admin gui)
+
+    return newapp;
 }
 
 
