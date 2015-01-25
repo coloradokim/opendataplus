@@ -91,7 +91,7 @@ module.exports.loadRoutes = function(router) {
 function makeDoc(req) {
     var newDoc = req.body;
     newDoc.metadata = new docMetaModel();
-    newDoc.metadata.history[Date.now()] = "new docment created";
+    newDoc.metadata.history[Date.now()] = "new document created";
     return newDoc;
 }
 
