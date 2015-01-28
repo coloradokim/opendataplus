@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var authUtils = require('./app/util/authutils');
 
 //var routes = require('./routes/index');
 //var users = require('./routes/users');
@@ -14,7 +15,7 @@ var app = express();
 var mongo = require('mongoskin');
 
 // Setup Database
-//var db = mongo.db("mongodb://localhost:27017/opendataplus",{native_parser:true});
+//global.db = mongo.db("mongodb://localhost:27017/opendataplus",{native_parser:true});
 global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
 
 /*
@@ -48,11 +49,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // load all controller routes
 var router = express.Router();
 var routes = require('./app/app_main.js')(router);
-app.use('/', router);
+var authRouter = authUtils.buildAuthRouter();
+app.use('/', authRouter, router);
+
 
 
 //app.use('/', routes);
