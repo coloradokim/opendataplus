@@ -30,19 +30,21 @@ describe('docs api', function(){
     });
 
     it('can create a test app to put an appspace in', function(done) {
-        api.post('/app')
+        api.post('/apps')
             .set('Accept', 'application/json')
             .set('Content-Type', 'application/json')
             .send({ name: "testapp1" })
             .expect(function(res) {
-                cnosole.log("APP POST BEFORE RESULT: " + res.body.toString());
+                console.log("APP POST BEFORE RESULT: " + res.body.toString());
                 testappid = res.body._id;
                 if (!res.body._id) {
                     console.log("AAHHH, app post failed");
                     throw "no id found in response: " + res.body.toString();
                 }
                 asyncDone = true;
-            });
+            })
+	    .end(function(res, err) {});
+	done();
     });
 
 
@@ -55,17 +57,23 @@ describe('docs api', function(){
                 testdocid = res.body._id;
                 if (!res.body._id) throw "no id found in response: " + res.body.toString();
             })
-            .expect(201,done);
+            .expect(201,done)
+	    .end(function(res, err) {});
+	done();
     });
 
     it('can get a list of elements', function(done) {
         api.get('/apps/' + testappid + '/appspace')
             .expect(200, done)
+	    .end(function(res, err) {});
+	done();
     });
 
     it('can get the new element', function(done) {
         api.get('/apps/' + testappid + '/appspace/' + testdocid)
-            .expect(200,done);
+            .expect(200,done)
+	    .end(function(res, err) {});
+	done();
     });
 
     /*
@@ -84,7 +92,9 @@ describe('docs api', function(){
 
     it('can delete the new element', function(done) {
         api.delete('/apps/' + testappid + '/appspace/' + testdocid)
-            .expect(200,done);
+            .expect(200,done)
+	    .end(function(res, err) {});
+	done();
     });
 
 
@@ -92,7 +102,8 @@ describe('docs api', function(){
     after(function(){
 
         api.delete('/apps/' + testappid)
-            .expect(200);
+            .expect(200)
+	    .end(function(res, err) {});
 
         server.close();
     })

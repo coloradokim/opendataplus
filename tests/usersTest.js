@@ -51,12 +51,12 @@ describe('users api', function(){
         api.post('/users')
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json')
-        .send({ name: "Jon Doe", email : "himom@gmail.com" })
+        .send({ name: "Jon Doeeeeeeeeeeee", email : "himom@gmail.com" })
         .expect(function(res) {
-            testdatasetid = res.body.id;
-            if (!res.body.id) throw "no id found in response: " + res.body.toString();
+            testdatasetid = res.body._id;
+            if (!res.body._id) throw "no id found in response: " + res.body.toString();
         })
-        .expect(201,done);
+        .expect(200,done);
     });
 
     after(function(){

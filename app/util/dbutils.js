@@ -22,7 +22,7 @@ dbutils.prototype.createDocument = function(collection, newDocument, callback) {
         });
 }
 
-dbutils.prototype.readDocumentById = function(collection, docid, queryOptions, callback) {
+dbutils.prototype.findDocumentById = function(collection, docid, queryOptions, callback) {
 
     var selector = { _id: new ObjectID(docid) };
 
@@ -70,6 +70,9 @@ dbutils.prototype.findDocument = function(collection, queryOptions, callback) {
 }
 
 dbutils.prototype.findRandomDocument = function(collection, queryOptions, callback) {
+
+    // Check if more than one random number of documents have been requested
+    console.log("From dbutils findRandomDocument: ", queryOptions);
 
     //get a count of docs
     global.db.collection(collection).count(function(err, result) {
