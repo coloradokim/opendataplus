@@ -4,7 +4,7 @@
 'use strict';
 
 var dbutils = require('../util/dbutils');
-var datasetModel = require('./doc_model');
+var DocModel = require('./doc_model');
 var getReqQuery = require('../util/apiutils').getRequestQuery;
 var respond = require('../util/apiutils').respond;
 
@@ -18,77 +18,86 @@ module.exports.loadRoutes = function(router) {
 
     //search in the collection
     router.get('/datasets/:datasetid/docs', function(req, res, next) {
-        dbutils.findDocument(req.param("datasetid"), getReqQuery(req, 2), function(err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.findDocument(DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //add a document to the collection
     router.post('/datasets/:datasetid/docs', function(req, res, next) {
-        var newDoc = makeDocument(req);
-        dbutils.createDocument(req.param("datasetid"), newDoc, function(err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        var newDoc = makeDatasetDoc(req);
+        dbutils.createDocument(DB_COLLECTION, newDoc, function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //find a random document from the collection
     router.get('/datasets/:datasetid/docs/random', function(req, res, next) {
-        dbutils.findRandomDocument(req.param("datasetid"), getReqQuery(req, 2), function(err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.findRandomDocument(DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //get an existing document by id
     router.get('/datasets/:datasetid/docs/:docid', function(req, res, next) {
-        if (authorizeDataset(req.appid, req.param("datasetid"))) {
-            dbutils.findDocumentById(req.param("datasetid"), req.param("docid"), getReqQuery(req, 2), function (err, result) {
+        //if (authorizeDataset(req.appid, DB_COLLECTION)) {
+            DB_COLLECTION = "ds"+req.param("datasetid");
+            dbutils.findDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
                 respond(req, res, next, err, result);
             });
-        } else {
-            respond(req, res, next, "App ("+req.appid+") not authorized to dataset ("+req.param("datasetid")+")", null);
-        }
+       // } else {
+       //     respond(req, res, next, "App ("+req.appid+") not authorized to dataset ("+DB_COLLECTION+")", null);
+       // }
     });
 
     //get a subdocument of an existing document by id
     router.get('/datasets/:datasetid/docs/:docid/*', function(req, res, next) {
-        dbutils.findDocumentById(req.param("datasetid") , req.param("datasetid"), getReqQuery(req, 2), function(err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.findDocumentById(DB_COLLECTION , DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //replace an existing document with a new object
     router.put('/datasets/:datasetid/docs/:docid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("datasetid"), getReqQuery(req, 2), function (err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.updateDocumentById(DB_COLLECTION, getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //partial update an existing document
     router.patch('/datasets/:datasetid/docs/:docid', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("datasetid"), getReqQuery(req, 2), function (err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.updateDocumentById(DB_COLLECTION, getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //partial update an existing document
     router.patch('/datasets/:datasetid/docs/:docid/*', function(req, res, next) {
-        dbutils.updateDocumentById(req.param("datasetid"), getReqQuery(req, 2), function (err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.updateDocumentById(DB_COLLECTION, getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
 
     //delete an existing document
     router.delete('/datasets/:datasetid/docs/:docid', function(req, res, next) {
-        dbutils.deleteDocumentById(req.param("datasetid"), req.param("datasetid"), function(err, result) {
+        DB_COLLECTION = "ds"+req.param("datasetid");
+        dbutils.deleteDocumentById(DB_COLLECTION, DB_COLLECTION, function(err, result) {
             respond(req, res, next, err, result);
         });
     });
 
 };
 
-function makeDataset(req) {
-    var newDataset = new DatasetModel(req.body);
-    return newDataset;
+function makeDatasetDoc(req) {
+    var makeDatasetDoc = new DocModel(req.body);
+    return makeDatasetDoc;
 }
 
 

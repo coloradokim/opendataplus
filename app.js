@@ -13,16 +13,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var mongo = require('mongoskin');
 
-// Setup Database
-//var db = mongo.db("mongodb://localhost:27017/opendataplus",{native_parser:true});
-global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
-
-/*
-db.authenticate("odp", "Hack4art", function(error, result){
-                 console.log("RESULT FROM DB authentication:", error, result)
-               });
-*/
-
+// Setup Database is done in bin/www file
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

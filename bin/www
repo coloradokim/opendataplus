@@ -3,6 +3,7 @@ var debug = require('debug')('odp');
 var app = require('../app');
 var fs = require('fs');
 var https = require('https');
+var mongo = require('mongoskin');
 
 var port = process.env.PORT || 3000;
 
@@ -11,6 +12,8 @@ var options = {
   cert: fs.readFileSync('config/server.crt')
 };
 
+//setup db & authenticate
+global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
 var dbAuthDone = false;
 global.db.authenticate("odp", "Hack4art", function(error, result) {
   console.log("RESULT FROM DB authentication:", error, result)
