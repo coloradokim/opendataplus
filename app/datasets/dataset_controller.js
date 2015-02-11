@@ -4,7 +4,7 @@
 'use strict';
 
 var dbutils = require('../util/dbutils');
-var datasetModel = require('./dataset_model');
+var DatasetModel = require('./dataset_model');
 var getReqQuery = require('../util/apiutils').getRequestQuery;
 var respond = require('../util/apiutils').respond;
 
@@ -27,13 +27,6 @@ module.exports.loadRoutes = function(router) {
     router.post('/datasets', function(req, res, next) {
         var newDS = makeDataset(req);
         dbutils.createDocument(DB_COLLECTION, newDS, function(err, result) {
-            respond(req, res, next, err, result);
-        });
-    });
-
-    //find a random document from the collection
-    router.get('/datasets/random', function(req, res, next) {
-        dbutils.findRandomDocument(DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
     });

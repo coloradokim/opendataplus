@@ -19,7 +19,7 @@ module.exports.loadRoutes = function(router) {
 
     //search in the collection
     router.get('/apps/:appid/appspace', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.findDocument(DB_COLLECTION, getReqQuery(req, 2), function(err, result) {
             respond(req, res, next, err, result);
         });
@@ -27,7 +27,7 @@ module.exports.loadRoutes = function(router) {
 
     //add a document to the collection
     router.post('/apps/:appid/appspace', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         var newDoc = makeDoc(req);
         dbutils.createDocument(DB_COLLECTION, newDoc, function(err, result) {
             respond(req, res, next, err, result);
@@ -41,7 +41,7 @@ module.exports.loadRoutes = function(router) {
 
     //get an existing document by id
     router.get('/apps/:appid/appspace/:docid', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.findDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
@@ -49,7 +49,7 @@ module.exports.loadRoutes = function(router) {
 
     //get a subdocument of an existing document by id
     router.get('/apps/:appid/appspace/:docid/*', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.findDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function(err, result) {
             respond(req, res, next, err, result);
         });
@@ -57,7 +57,7 @@ module.exports.loadRoutes = function(router) {
 
     //replace an existing document with a new object
     router.put('/apps/:appid/appspace/:docid', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.updateDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
@@ -65,7 +65,7 @@ module.exports.loadRoutes = function(router) {
 
     //partial update an existing document
     router.patch('/apps/:appid/appspace/:docid', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.updateDocumentById(DB_COLLECTION, req.param("docid"), getReqQuery(req, 4), function (err, result) {
             respond(req, res, next, err, result);
         });
@@ -80,7 +80,7 @@ module.exports.loadRoutes = function(router) {
 
     //delete an existing document
     router.delete('/apps/:appid/appspace/:docid', function(req, res, next) {
-        DB_COLLECTION = "appspace-"||req.param("appid");
+        DB_COLLECTION = "as"+req.param("appid");
         dbutils.deleteDocumentById(DB_COLLECTION, req.param("docid"), function(err, result) {
             respond(req, res, next, err, result);
         });

@@ -2,16 +2,18 @@
 var debug = require('debug')('odp');
 var app = require('../app');
 var fs = require('fs');
-//var https = require('https');
-var http = require('http');
+
+var https = require('https');
+var mongo = require('mongoskin');
 
 var port = process.env.PORT || 3000;
 
-//var options = {
-//  key: fs.readFileSync('config/server.key'),
-//  cert: fs.readFileSync('config/server.crt')
-//};
+var options = {
+  key: fs.readFileSync('config/server.key'),
+  cert: fs.readFileSync('config/server.crt')
+};
 
+//setup db & authenticate
 var dbAuthDone = false;
 global.db.authenticate("odp", "Hack4art", function(error, result) {
   console.log("RESULT FROM DB authentication:", error, result)
@@ -21,8 +23,7 @@ while (!dbAuthDone) {
   require('deasync').runLoopOnce();
 }
 
-//var server = https.createServer(options, app).listen(port);
-var server = http.createServer(app).listen(port);
+var server = https.createServer(options, app).listen(port);
 debug('Express server listening on port ' + server.address().port);
 
 
