@@ -26,7 +26,7 @@ module.exports.loadRoutes = function(router) {
 
     //search in the collection
     router.get('/users/:userid', function (req, res, next) {
-        dbutils.findDocumentById(DB_COLLECTION, req.getParam("userid"), getReqQuery(req, 2), function (err, result) {
+        dbutils.findDocumentById(DB_COLLECTION, req.param("userid"), getReqQuery(req, 2), function (err, result) {
             respond(req, res, next, err, result);
         });
     });
