@@ -14,6 +14,7 @@ var app = express();
 var mongo = require('mongoskin');
 
 // Setup Database is done in bin/www file
+global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
