@@ -4,7 +4,7 @@
 
 var should = require('chai').should(),
     supertest = require('supertest'),
-    api = supertest('https://localhost:3001'),
+    api = supertest('http://localhost:3001'),
     http = require('http');
 
 describe('docs api', function(){
@@ -35,15 +35,16 @@ describe('docs api', function(){
             .set('Content-Type', 'application/json')
             .send({ name: "testapp1" })
             .expect(function(res) {
-                console.log("APP POST BEFORE RESULT: " + res.body.toString());
+                console.log("APP POST BEFORE RESULT: " + JSON.stringify(res.body, null, 4));
                 testappid = res.body._id;
+		console.log("TESTAPPID: " + JSON.stringify(testappid, null, 4));
                 if (!res.body._id) {
                     console.log("AAHHH, app post failed");
                     throw "no id found in response: " + res.body.toString();
                 }
                 asyncDone = true;
             })
-	    .end(function(res, err) {});
+	    .end(function(res, err) {console.log("Got to the end of 'can create a test app to put an appaspace in'")});
 	done();
     });
 
@@ -65,7 +66,7 @@ describe('docs api', function(){
     it('can get a list of elements', function(done) {
         api.get('/apps/' + testappid + '/appspace')
             .expect(200, done)
-	    .end(function(res, err) {});
+	    .end(function(res, err) {console.log("Got to the end of 'can get a list of elements'")});
 	done();
     });
 

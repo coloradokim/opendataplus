@@ -2,15 +2,19 @@
 var debug = require('debug')('odp');
 var app = require('../app');
 var fs = require('fs');
+
 var https = require('https');
 var mongo = require('mongoskin');
 
+//var https = require('https');
+var http = require('http');
+
 var port = process.env.PORT || 3000;
 
-var options = {
-  key: fs.readFileSync('config/server.key'),
-  cert: fs.readFileSync('config/server.crt')
-};
+//var options = {
+//  key: fs.readFileSync('config/server.key'),
+//  cert: fs.readFileSync('config/server.crt')
+//};
 
 //setup db & authenticate
 global.db = mongo.db("mongodb://ds051970.mongolab.com:51970/odp",{native_parser:true});
@@ -23,7 +27,8 @@ while (!dbAuthDone) {
   require('deasync').runLoopOnce();
 }
 
-var server = https.createServer(options, app).listen(port);
+//var server = https.createServer(options, app).listen(port);
+var server = http.createServer(app).listen(port);
 debug('Express server listening on port ' + server.address().port);
 
 
