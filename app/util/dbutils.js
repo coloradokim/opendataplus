@@ -81,7 +81,7 @@ dbutils.prototype.findRandomDocument = function(collection, queryOptions, callba
         var skipCount = Math.floor(Math.random() * (result + 1) );
 
         global.db.collection(collection)
-            .find(queryOptions.select, {}, {limit:-1, skip:skipCount})
+            .find(queryOptions.select, {}, {limit:1, skip:skipCount})
             .toArray(function(err, result) {
 
                 if (result && result.length>0) {
