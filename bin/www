@@ -23,6 +23,8 @@ while (!dbAuthDone) {
   require('deasync').runLoopOnce();
 }
 
+console.log("Starting server on port:", port)
+
 var server = https.createServer(options, app).listen(port);
 debug('Express server listening on port ' + server.address().port);
 

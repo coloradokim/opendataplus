@@ -69,27 +69,77 @@ dbutils.prototype.findDocument = function(collection, queryOptions, callback) {
 
 }
 
+// Method to keep track of the number of calls to the .collection.find method in
+// in the function below
+var objToCollectCount = 0;
+//function objCollectCB(err, objRemainingCount, result) {
+//}
+
 dbutils.prototype.findRandomDocument = function(collection, queryOptions, callback) {
 
     // Check if more than one random number of documents have been requested
-    console.log("From dbutils findRandomDocument: ", queryOptions);
+    console.log("From dbutils findRandomDocument queryOptions =", queryOptions);
 
-    //get a count of docs
+    // Let us see how many random objects are being requested (the 'limit' parameter
+    // specifies that).
+    randomObjCount = queryOptions.options.limit
+    
+    // get a count of docs
     global.db.collection(collection).count(function(err, result) {
-
-        //get random value to skip
-        var skipCount = Math.floor(Math.random() * (result + 1) );
-
-        global.db.collection(collection)
-            .find(queryOptions.select, {}, {limit:1, skip:skipCount})
-            .toArray(function(err, result) {
-
-                if (result && result.length>0) {
-                    callback(err, result[0]);
-                } else {
-                    callback(err, null);
+        // Check if the number of requested objects is 1 or more
+        if (randomObjCount == 1) {
+            // Just a single random object is being requested
+            // get random value to skip
+            var skipCount = Math.floor(Math.random() * (result + 1) );
+             
+            global.db.collection(collection)
+                .find(queryOptions.select, {}, {limit:1, skip:skipCount})
+                .toArray(function(err, result) {
+                    if (result && result.length>0) {
+                        callback(err, result[0]);
+                    } else {
+                        callback(err, null);
+                    }
+                });
+        } else {
+            // If the requested count exceeds the number of records in the database,
+            // return the entire collection in random order
+            if (randomObjCount > result) {
+                randomObjCount = result;
+            }
+            // Now, create a set of random values to skip for each query
+            var skipCountArr = [];
+            for (i = 0; i < randomObjCount; i++) {
+                skipCount = Math.floor(Math.random() * (result + 1) );
+                while (skipCountArr.indexOf(skipCount) != -1) {
+                    skipCount = Math.floor(Math.random() * (result + 1) );
                 }
-            });
+                skipCountArr[i] = skipCount;
+            }
+            console.log("The indices being fetched are:", skipCountArr);
+            // Now loop around once again to do a .find on the DB and collect the
+            // requested number of records
+            var objArr = [];
+            objToCollectCount = randomObjCount;
+            for (i = 0; i < randomObjCount; i++) {
+                global.db.collection(collection)
+                    .find(queryOptions.select, {}, {limit:1, skip:skipCountArr[i]})
+                    .toArray(function(err, result) {
+                        if (result && result.length>0) {
+                            objArr[randomObjCount-objToCollectCount] = result[0];
+                            objToCollectCount--;
+                            console.log("Number of documents found so far:", randomObjCount-objToCollectCount);
+                            console.log("Number of documents still pending:", objToCollectCount);
+                            if (objToCollectCount == 0) {
+                                console.log("All documents found. The objArr is:", objArr);
+                                callback(err, objArr)
+                            }
+                        } else {
+                            callback(err, null);
+                        }
+                    });
+            }
+        }
     });
 }
 
