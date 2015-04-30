@@ -21,7 +21,7 @@ function getRequestQuery(req, baseUrlLength) {
 
     //initialize to query all results, all fields, all documents
     queryObject.options = {};
-    queryObject.options.limit = 20; //100;
+    queryObject.options.limit = 100;
     queryObject.options.skip = 0;
     queryObject.fields = {};
     queryObject.select = {};

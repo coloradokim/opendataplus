@@ -90,7 +90,7 @@ dbutils.prototype.findRandomDocument = function(collection, queryOptions, callba
         if (randomObjCount == 1) {
             // Just a single random object is being requested
             // get random value to skip
-            var skipCount = Math.floor(Math.random() * (result + 1) );
+            var skipCount = Math.floor(Math.random() * result);
              
             global.db.collection(collection)
                 .find(queryOptions.select, {}, {limit:1, skip:skipCount})
@@ -107,12 +107,13 @@ dbutils.prototype.findRandomDocument = function(collection, queryOptions, callba
             if (randomObjCount > result) {
                 randomObjCount = result;
             }
+            console.log("The total number of random entries being fetched are:", randomObjCount);
             // Now, create a set of random values to skip for each query
             var skipCountArr = [];
             for (i = 0; i < randomObjCount; i++) {
-                skipCount = Math.floor(Math.random() * (result + 1) );
+                skipCount = Math.floor(Math.random() * result);
                 while (skipCountArr.indexOf(skipCount) != -1) {
-                    skipCount = Math.floor(Math.random() * (result + 1) );
+                    skipCount = Math.floor(Math.random() * result);
                 }
                 skipCountArr[i] = skipCount;
             }
@@ -122,20 +123,24 @@ dbutils.prototype.findRandomDocument = function(collection, queryOptions, callba
             var objArr = [];
             objToCollectCount = randomObjCount;
             for (i = 0; i < randomObjCount; i++) {
+                console.log("Fetching document with skipCount:", skipCountArr[i]);
                 global.db.collection(collection)
                     .find(queryOptions.select, {}, {limit:1, skip:skipCountArr[i]})
                     .toArray(function(err, result) {
                         if (result && result.length>0) {
                             objArr[randomObjCount-objToCollectCount] = result[0];
                             objToCollectCount--;
-                            console.log("Number of documents found so far:", randomObjCount-objToCollectCount);
-                            console.log("Number of documents still pending:", objToCollectCount);
-                            if (objToCollectCount == 0) {
-                                console.log("All documents found. The objArr is:", objArr);
-                                callback(err, objArr)
-                            }
+//                            console.log("Number of documents found so far:", randomObjCount-objToCollectCount);
+//                            console.log("Number of documents still pending:", objToCollectCount);
+                            console.log("Document fetched successfully. ID:", result[0]._id);
                         } else {
-                            callback(err, null);
+                            objArr[randomObjCount-objToCollectCount] = err;
+                            objToCollectCount--;
+                            console.log("Error encountered in fetching object. Error:", err);
+                        }
+                        if (objToCollectCount == 0) {
+                            console.log("All documents found. The objArr is:", objArr);
+                            callback(err, objArr)
                         }
                     });
             }
