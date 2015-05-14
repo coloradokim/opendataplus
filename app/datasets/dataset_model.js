@@ -7,10 +7,11 @@ module.exports = Dataset;
 function Dataset() {
     this.name = "";  //"lafayette.com-publicart"
     this.org = "orgid";
+    this.updateFrequency = "daily"; //frequency to check the publisher/owner source for updates to the dataset
+    this.docRetentionTime = 365; //number of days to retain a document after it is deleted by the dataset owner/pubisher
     this.viewApps = {}  //apps that can see this data, view apps can edit their appspace
     this.editApps = {};  //apps that can edit the core data
 }
-
 
 
 /*
