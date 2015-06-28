@@ -17,7 +17,7 @@
 
  **/
 
-var http = require('http');
+var request = require('request');
 
 module.exports = checkForUpdates
 
@@ -35,21 +35,16 @@ function _parseJson(cityJson) {
 
 function checkForUpdates(schedulerCallback) {
     
-  return http.get({
-        host: 'data.opencolorado.org',
-        path: '/api/3/action/package_show?id=city-of-boulder-open-development-review-cases'
-    }, function(response) {
-        // Continuously update stream with data
-        var body = '';
-        response.on('data', function(d) {
-            body += d;
-        });
-        response.on('end', function() {
-
+  return request.get('https://data.opencolorado.org/api/3/action/package_show?id=city-of-boulder-open-development-review-cases'
+    , function(err, response, body) {
+            if(err) {
+              console.log(err);
+              return;
+            }
             // Data reception is done, do whatever with it!
             var parsed = JSON.parse(body);
             var isUpdated = _parseJson(parsed);
             schedulerCallback(isUpdated);
-        });
-    });
+        }
+    );
 }
