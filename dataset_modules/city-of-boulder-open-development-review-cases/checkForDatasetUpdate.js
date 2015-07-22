@@ -18,19 +18,33 @@
  **/
 
 var request = require('request');
+var mongo = require('mongoskin');
+
+global.db = mongo.db("mongodb://localhost/c3po",{native_parser:true});
 
 module.exports = checkForUpdates
 
-function _parseJson(cityJson) {
-  var updated = false;
-  cityJson.result.resources.forEach(function(resource) {
-    if(resource.format == "geojson" 
-      && Date.parse(resource.revision_timestamp) > Date.parse("2015-06-09")) {
-        updated = true;
+function _findLastUpdated(revision_timestamp, schedulerCallback) {
+  db.findOne({lastUpdated: {$gt: revision_timestamp}}, function(lastUpdated) {
+    if(lastUpdated != null) {
+      schedulerCallback(true);
     }
+    schedulerCallback(false);
+  });
+}
+
+function _parseJson(cityJson, schedulerCallback) {
+  var updated = false;
+  var revision_timestamp;
+  cityJson.result.resources.some(function(resource) {
+    if(resource.format == "geojson") { 
+      revision_timestamp = Date.parse(resource.revision_timestamp);
+      return true;
+    }
+    return false;
   });
 
-  return updated;
+  _isUpdated(revision_timestamp, schedulerCallback);
 }
 
 function checkForUpdates(schedulerCallback) {
@@ -43,8 +57,7 @@ function checkForUpdates(schedulerCallback) {
             }
             // Data reception is done, do whatever with it!
             var parsed = JSON.parse(body);
-            var isUpdated = _parseJson(parsed);
-            schedulerCallback(isUpdated);
+            _parseJson(parsed, schedulerCallback);
         }
     );
 }
