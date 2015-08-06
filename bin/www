@@ -17,15 +17,7 @@ var options = {
 var dbAuthDone = false;
 global.db.authenticate("odp", "Hack4art", function(error, result) {
   console.log("RESULT FROM DB authentication:", error, result)
-  dbAuthDone = true;
-});
-while (!dbAuthDone) {
-  require('deasync').runLoopOnce();
-}
-
-console.log("Starting server on port:", port)
-
-var server = https.createServer(options, app).listen(port);
-debug('Express server listening on port ' + server.address().port);
-
-
+  console.log("Starting server on port:", port)
+  var server = https.createServer(options, app).listen(port);
+  debug('Express server listening on port ' + server.address().port);
+})
